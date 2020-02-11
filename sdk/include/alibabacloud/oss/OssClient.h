@@ -96,7 +96,7 @@ namespace OSS
         ListObjectVersionsOutcome ListObjectVersions(const std::string& bucket) const;
         ListObjectVersionsOutcome ListObjectVersions(const std::string& bucket, const std::string& prefix) const;
         ListObjectVersionsOutcome ListObjectVersions(const ListObjectVersionsRequest& request) const;
-        ListBucketInventoryConfigurationOutcome ListBucketInventoryConfiguration(const ListBucketInventoryConfigurationRequest& request) const;
+        ListBucketInventoryConfigurationsOutcome ListBucketInventoryConfigurations(const ListBucketInventoryConfigurationsRequest& request) const;
 
         VoidOutcome SetBucketAcl(const std::string& bucket, CannedAccessControlList acl) const;
         VoidOutcome SetBucketAcl(const SetBucketAclRequest& request) const;
@@ -119,7 +119,7 @@ namespace OSS
         VoidOutcome SetBucketQosInfo(const SetBucketQosInfoRequest& request) const;
         VoidOutcome SetBucketVersioning(const SetBucketVersioningRequest& request) const;
         VoidOutcome SetBucketInventoryConfiguration(const SetBucketInventoryConfigurationRequest& request) const;
-		
+
         VoidOutcome DeleteBucket(const std::string& bucket) const;
         VoidOutcome DeleteBucket(const DeleteBucketRequest& request) const;
         VoidOutcome DeleteBucketLogging(const std::string& bucket) const;
@@ -164,7 +164,7 @@ namespace OSS
         GetUserQosInfoOutcome GetUserQosInfo(const GetUserQosInfoRequest& request) const;
         GetBucketVersioningOutcome GetBucketVersioning(const GetBucketVersioningRequest& request) const;
         GetBucketInventoryConfigurationOutcome GetBucketInventoryConfiguration(const GetBucketInventoryConfigurationRequest& request) const;
-		
+
         /*Object*/
         GetObjectOutcome GetObject(const std::string& bucket, const std::string& key) const;
         GetObjectOutcome GetObject(const std::string& bucket, const std::string& key, const std::shared_ptr<std::iostream>& content) const;

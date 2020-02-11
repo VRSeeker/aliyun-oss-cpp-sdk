@@ -105,13 +105,19 @@ namespace OSS
     const char * ToTierTypeName(TierType status);
     TierType ToTierType(const char *name);
 
-    const char* ToInventoryFrequencyName(InventoryFrequency status);
-    InventoryFrequency ToInventoryFrequency(const char* name);
+    const char* ToInventoryFormatName(InventoryFormat status);
+    InventoryFormat ToInventoryFormatType(const char* name);
 
-    const char* ToInventoryOptionalFieldsName(InventoryOptionalFields status);
-    InventoryOptionalFields ToInventoryOptionalFields(const char* name);
+    const char* ToInventoryFrequencyName(InventoryFrequency status);
+    InventoryFrequency ToInventoryFrequencyType(const char* name);
+
+    const char* ToInventoryOptionalFieldName(InventoryOptionalField status);
+    InventoryOptionalField ToInventoryOptionalFieldType(const char* name);
 
     const char* ToInventoryIncludedObjectVersionsName(InventoryIncludedObjectVersions status);
-    InventoryIncludedObjectVersions ToInventoryIncludedObjectVersions(const char* name);
+    InventoryIncludedObjectVersions ToInventoryIncludedObjectVersionsType(const char* name);
+
+    std::string ToInventoryBucketFullName(const std::string& name);
+    std::string ToInventoryBucketShortName(const char* name);
 }
 }

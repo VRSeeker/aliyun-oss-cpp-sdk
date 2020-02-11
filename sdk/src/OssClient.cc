@@ -108,9 +108,9 @@ ListBucketsOutcome OssClient::ListBuckets(const ListBucketsRequest &request) con
     return client_->ListBuckets(request);
 }
 
-ListBucketInventoryConfigurationOutcome OssClient::ListBucketInventoryConfiguration(const ListBucketInventoryConfigurationRequest& request) const
+ListBucketInventoryConfigurationsOutcome OssClient::ListBucketInventoryConfigurations(const ListBucketInventoryConfigurationsRequest& request) const
 {
-    return client_->ListBucketInventoryConfiguration(request);
+    return client_->ListBucketInventoryConfigurations(request);
 }
 
 CreateBucketOutcome OssClient::CreateBucket(const std::string &bucket, StorageClass storageClass) const

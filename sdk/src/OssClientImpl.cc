@@ -937,17 +937,17 @@ GetBucketInventoryConfigurationOutcome OssClientImpl::GetBucketInventoryConfigur
     }
 }
 
-ListBucketInventoryConfigurationOutcome OssClientImpl::ListBucketInventoryConfiguration(const ListBucketInventoryConfigurationRequest& request) const
+ListBucketInventoryConfigurationsOutcome OssClientImpl::ListBucketInventoryConfigurations(const ListBucketInventoryConfigurationsRequest& request) const
 {
     auto outcome = MakeRequest(request, Http::Method::Get);
     if (outcome.isSuccess()) {
-        ListBucketInventoryConfigurationResult result(outcome.result().payload());
+        ListBucketInventoryConfigurationsResult result(outcome.result().payload());
         result.requestId_ = outcome.result().RequestId();
-        return result.ParseDone() ? ListBucketInventoryConfigurationOutcome(std::move(result)) :
-            ListBucketInventoryConfigurationOutcome(OssError("ParseXMLError", "Parsing ListBucketInventoryConfiguration result fail."));
+        return result.ParseDone() ? ListBucketInventoryConfigurationsOutcome(std::move(result)) :
+            ListBucketInventoryConfigurationsOutcome(OssError("ParseXMLError", "Parsing ListBucketInventoryConfigurations result fail."));
     }
     else {
-        return ListBucketInventoryConfigurationOutcome(outcome.error());
+        return ListBucketInventoryConfigurationsOutcome(outcome.error());
     }
 }
 

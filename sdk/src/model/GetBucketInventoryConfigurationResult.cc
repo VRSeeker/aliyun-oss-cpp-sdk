@@ -57,7 +57,7 @@ GetBucketInventoryConfigurationResult& GetBucketInventoryConfigurationResult::op
 
             node = root->FirstChildElement("Filter");
             if (node) {
-                Filter filter;
+                InventoryFilter filter;
                 XMLElement* prefix_node = node->FirstChildElement("Prefix");
                 if (prefix_node && prefix_node->GetText()) filter.setPrefix(prefix_node->GetText());
                 inventoryConfiguration_.setFilter(filter);
@@ -68,45 +68,56 @@ GetBucketInventoryConfigurationResult& GetBucketInventoryConfigurationResult::op
                 next_node = node->FirstChildElement("OSSBucketDestination");
                 if (next_node) {
                     XMLElement* sub_node;
-                    OSSBucketDestination dest;
+                    InventoryOSSBucketDestination dest;
                     sub_node = next_node->FirstChildElement("Format");
-                    if (sub_node && sub_node->GetText()) dest.setFormat(sub_node->GetText());
+                    if (sub_node && sub_node->GetText()) dest.setFormat(ToInventoryFormatType(sub_node->GetText()));
                     sub_node = next_node->FirstChildElement("AccountId");
                     if (sub_node && sub_node->GetText()) dest.setAccountId(sub_node->GetText());
                     sub_node = next_node->FirstChildElement("RoleArn");
                     if (sub_node && sub_node->GetText()) dest.setRoleArn(sub_node->GetText());
                     sub_node = next_node->FirstChildElement("Bucket");
-                    if (sub_node && sub_node->GetText()) dest.setBucket(sub_node->GetText());
+                    if (sub_node && sub_node->GetText()) dest.setBucket(ToInventoryBucketShortName(sub_node->GetText()));
                     sub_node = next_node->FirstChildElement("Prefix");
                     if (sub_node && sub_node->GetText()) dest.setPrefix(sub_node->GetText());
                     sub_node = next_node->FirstChildElement("Encryption");
                     if (sub_node) {
-                        sub_node = sub_node->FirstChildElement("SSE-KMS");
-                        if (sub_node) {
-                            sub_node = sub_node->FirstChildElement("KeyId");
-                            if (sub_node && sub_node->GetText()) dest.setEncryption(sub_node->GetText());
+                        InventoryEncryption encryption;
+                        XMLElement* sse_node;
+                        sse_node = sub_node->FirstChildElement("SSE-KMS");
+                        if (sse_node) {
+                            InventorySSEKMS ssekms;
+                            XMLElement* key_node;
+                            key_node = sse_node->FirstChildElement("KeyId");
+                            if (key_node && key_node->GetText()) ssekms.setKeyId(key_node->GetText());
+                            encryption.setSSEKMS(ssekms);
                         }
+
+                        sse_node = sub_node->FirstChildElement("SSE-OSS");
+                        if (sse_node) {
+                            encryption.setSSEOSS(InventorySSEOSS());
+                        }
+                        dest.setEncryption(encryption);
                     }
-                    inventoryConfiguration_.setDestination(dest);
+                    inventoryConfiguration_.setDestination(InventoryDestination(dest));
                 }
             }
 
             node = root->FirstChildElement("Schedule");
             if (node) {
                 XMLElement* freq_node = node->FirstChildElement("Frequency");
-                if (freq_node && freq_node->GetText()) inventoryConfiguration_.setSchedule(ToInventoryFrequency(freq_node->GetText()));
+                if (freq_node && freq_node->GetText()) inventoryConfiguration_.setSchedule(ToInventoryFrequencyType(freq_node->GetText()));
             }
 
             node = root->FirstChildElement("IncludedObjectVersions");
-            if (node && node->GetText()) inventoryConfiguration_.setIncludedObjectVersions(ToInventoryIncludedObjectVersions(node->GetText()));
+            if (node && node->GetText()) inventoryConfiguration_.setIncludedObjectVersions(ToInventoryIncludedObjectVersionsType(node->GetText()));
 
             node = root->FirstChildElement("OptionalFields");
             if (node) {
-                OptionalFields field;
+                InventoryOptionalFields field;
                 XMLElement* field_node = node->FirstChildElement("Field");
                 for (; field_node; field_node = field_node->NextSiblingElement()) {
                     if (field_node->GetText())
-                        field.push_back(ToInventoryOptionalFields(field_node->GetText()));
+                        field.push_back(ToInventoryOptionalFieldType(field_node->GetText()));
                 }
                 inventoryConfiguration_.setOptionalFields(field);
             }

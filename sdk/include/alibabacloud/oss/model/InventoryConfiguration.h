@@ -16,78 +16,132 @@
 #pragma once
 
 #include <alibabacloud/oss/Export.h>
+#include <alibabacloud/oss/Types.h>
 #include <string>
 #include <vector>
 namespace AlibabaCloud
 {
 namespace OSS
 {
-    class ALIBABACLOUD_OSS_EXPORT OSSBucketDestination
+    class ALIBABACLOUD_OSS_EXPORT InventoryFilter
     {
     public:
-        const std::string& Format() const { return format_; }
+        InventoryFilter();
+        InventoryFilter(const std::string& prefix);
+        const std::string& Prefix() const { return prefix_; }
+        void setPrefix(const std::string& prefix) { prefix_ = prefix; }
+    private:
+        std::string prefix_;
+    };
+
+    class ALIBABACLOUD_OSS_EXPORT InventorySSEOSS
+    {
+    public:
+        InventorySSEOSS();
+    };
+
+    class ALIBABACLOUD_OSS_EXPORT InventorySSEKMS
+    {
+    public:
+        InventorySSEKMS();
+        InventorySSEKMS(const std::string& key);
+        const std::string& KeyId() const { return keyId_; }
+        void setKeyId(const std::string& key) { keyId_ = key; }
+    private:
+        std::string keyId_;
+    };
+
+    class ALIBABACLOUD_OSS_EXPORT InventoryEncryption
+    {
+    public:
+        InventoryEncryption();
+        InventoryEncryption(const InventorySSEOSS& value);
+        InventoryEncryption(const InventorySSEKMS& value);
+
+        const InventorySSEOSS& SSEOSS() const { return inventorySSEOSS_; }
+        void setSSEOSS(const InventorySSEOSS& value) { inventorySSEOSS_ = value;  inventorySSEOSIsSet_ = true; }
+        bool hasSSEOSS() const { return inventorySSEOSIsSet_; }
+
+        const InventorySSEKMS& SSEKMS() const { return inventorySSEKMS_; }
+        void setSSEKMS(const InventorySSEKMS& value) { inventorySSEKMS_ = value;  inventorySSEKMSIsSet_ = true; }
+        bool hasSSEKMS() const { return inventorySSEKMSIsSet_; }
+
+    private:
+        InventorySSEOSS inventorySSEOSS_;
+        bool inventorySSEOSIsSet_;
+
+        InventorySSEKMS inventorySSEKMS_;
+        bool inventorySSEKMSIsSet_;
+    };
+
+    class ALIBABACLOUD_OSS_EXPORT InventoryOSSBucketDestination
+    {
+    public:
+        InventoryOSSBucketDestination();
+        InventoryFormat Format() const { return format_; }
         const std::string& AccountId() const { return accountId_; }
         const std::string& RoleArn() const { return roleArn_; }
         const std::string& Bucket() const { return bucket_; }
         const std::string& Prefix() const { return prefix_; }
-        const std::string& Encryption() const { return encryption_; }
+        const InventoryEncryption& Encryption() const { return encryption_; }
 
-        void setFormat(const std::string& format) { format_ = format; }
+        void setFormat(InventoryFormat format) { format_ = format; }
         void setAccountId(const std::string& accountId) { accountId_ = accountId; }
         void setRoleArn(const std::string& roleArn) { roleArn_ = roleArn; }
         void setBucket(const std::string& bucket) { bucket_ = bucket; }
         void setPrefix(const std::string& prefix) { prefix_ = prefix; }
-        void setEncryption(const std::string& encryption) { encryption_ = encryption; }
+        void setEncryption(const InventoryEncryption& encryption) { encryption_ = encryption; }
 
     private:
-        std::string format_;
+        InventoryFormat format_;
         std::string accountId_;
         std::string roleArn_;
         std::string bucket_;
         std::string prefix_;
-        std::string encryption_;
+        InventoryEncryption encryption_;
     };
 
-    using OptionalFields = std::vector<InventoryOptionalFields>;
-
-    class ALIBABACLOUD_OSS_EXPORT Filter
+    class InventoryDestination
     {
-        public:
-        const std::string& Prefix() const { return prefix_; }
-
-        void setPrefix(const std::string& prefix) { prefix_ = prefix; }
-
-        private:
-            std::string prefix_;
+    public:
+        InventoryDestination() {}
+        InventoryDestination(const InventoryOSSBucketDestination& destination):InventoryOSSBucketDestination_(destination){}
+        const InventoryOSSBucketDestination& OSSBucketDestination() const { return InventoryOSSBucketDestination_; }
+        void setOSSBucketDestination(const InventoryOSSBucketDestination& destination) { InventoryOSSBucketDestination_ = destination; }
+    private:
+        InventoryOSSBucketDestination InventoryOSSBucketDestination_;
     };
+
+    using InventoryOptionalFields = std::vector<InventoryOptionalField>;
 
     class ALIBABACLOUD_OSS_EXPORT InventoryConfiguration
     {
     public:
+        InventoryConfiguration();
         const std::string& Id() const { return id_; }
         bool IsEnabled() const { return isEnabled_; }
-        const AlibabaCloud::OSS::Filter& Filter() const { return filter_; }
-        const OSSBucketDestination& Destination() const { return destination_; }
+        const InventoryFilter& Filter() const { return filter_; }
+        const InventoryDestination& Destination() const { return destination_; }
         const InventoryFrequency& Schedule() const { return schedule_; }
         const InventoryIncludedObjectVersions& IncludedObjectVersions() const { return includedObjectVersions_; }
-        const AlibabaCloud::OSS::OptionalFields& OptionalFields() const { return optionalFields_; }
+        const InventoryOptionalFields& OptionalFields() const { return optionalFields_; }
 
         void setId(const std::string& id) { id_ = id; }
         void setIsEnabled(bool isEnabled) { isEnabled_ = isEnabled; }
-        void setFilter(const AlibabaCloud::OSS::Filter& prefix) { filter_ = prefix; }
-        void setDestination(const OSSBucketDestination& destination) { destination_ = destination; }
+        void setFilter(const InventoryFilter& prefix) { filter_ = prefix; }
+        void setDestination(const InventoryDestination& destination) { destination_ = destination; }
         void setSchedule(const InventoryFrequency& schedule) { schedule_ = schedule; }
         void setIncludedObjectVersions(const InventoryIncludedObjectVersions& includedObjectVersions) { includedObjectVersions_ = includedObjectVersions; }
-        void setOptionalFields(const AlibabaCloud::OSS::OptionalFields& opt) { optionalFields_ = opt; }
+        void setOptionalFields(const InventoryOptionalFields& opt) { optionalFields_ = opt; }
 
     private:
         std::string id_;
         bool isEnabled_;
-        AlibabaCloud::OSS::Filter filter_;
-        OSSBucketDestination destination_;
+        InventoryFilter filter_;
+        InventoryDestination destination_;
         InventoryFrequency schedule_;
         InventoryIncludedObjectVersions includedObjectVersions_;
-        AlibabaCloud::OSS::OptionalFields optionalFields_;
+        InventoryOptionalFields optionalFields_;
     };
 
     using InventoryConfigurationList = std::vector<InventoryConfiguration>;

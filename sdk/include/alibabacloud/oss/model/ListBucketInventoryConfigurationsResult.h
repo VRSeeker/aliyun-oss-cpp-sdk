@@ -24,13 +24,13 @@ namespace AlibabaCloud
 {
 namespace OSS
 {
-    class ALIBABACLOUD_OSS_EXPORT ListBucketInventoryConfigurationResult : public OssResult
+    class ALIBABACLOUD_OSS_EXPORT ListBucketInventoryConfigurationsResult : public OssResult
     {
     public:
-        ListBucketInventoryConfigurationResult();
-        ListBucketInventoryConfigurationResult(const std::string& data);
-        ListBucketInventoryConfigurationResult(const std::shared_ptr<std::iostream>& data);
-        ListBucketInventoryConfigurationResult& operator=(const std::string& data);
+        ListBucketInventoryConfigurationsResult();
+        ListBucketInventoryConfigurationsResult(const std::string& data);
+        ListBucketInventoryConfigurationsResult(const std::shared_ptr<std::iostream>& data);
+        ListBucketInventoryConfigurationsResult& operator=(const std::string& data);
         const AlibabaCloud::OSS::InventoryConfigurationList& InventoryConfigurationList()const { return inventoryConfigurationList_; }
         bool IsTruncated() const { return isTruncated_; }
         const std::string& NextContinuationToken() const { return nextContinuationToken_; }

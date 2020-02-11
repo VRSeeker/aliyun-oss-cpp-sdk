@@ -15,32 +15,32 @@
  */
 
 
-#include <alibabacloud/oss/model/ListBucketInventoryConfigurationResult.h>
+#include <alibabacloud/oss/model/ListBucketInventoryConfigurationsResult.h>
 #include <tinyxml2/tinyxml2.h>
 #include "../utils/Utils.h"
 using namespace AlibabaCloud::OSS;
 using namespace tinyxml2;
 
-ListBucketInventoryConfigurationResult::ListBucketInventoryConfigurationResult() :
+ListBucketInventoryConfigurationsResult::ListBucketInventoryConfigurationsResult() :
     OssResult()
 {
 }
 
-ListBucketInventoryConfigurationResult::ListBucketInventoryConfigurationResult(const std::string& result) :
-    ListBucketInventoryConfigurationResult()
+ListBucketInventoryConfigurationsResult::ListBucketInventoryConfigurationsResult(const std::string& result) :
+    ListBucketInventoryConfigurationsResult()
 {
     *this = result;
 }
 
-ListBucketInventoryConfigurationResult::ListBucketInventoryConfigurationResult(const std::shared_ptr<std::iostream>& result) :
-    ListBucketInventoryConfigurationResult()
+ListBucketInventoryConfigurationsResult::ListBucketInventoryConfigurationsResult(const std::shared_ptr<std::iostream>& result) :
+    ListBucketInventoryConfigurationsResult()
 {
     std::istreambuf_iterator<char> isb(*result.get()), end;
     std::string str(isb, end);
     *this = str;
 }
 
-ListBucketInventoryConfigurationResult& ListBucketInventoryConfigurationResult::operator =(const std::string& result)
+ListBucketInventoryConfigurationsResult& ListBucketInventoryConfigurationsResult::operator =(const std::string& result)
 {
     XMLDocument doc;
     XMLError xml_err;
@@ -51,23 +51,23 @@ ListBucketInventoryConfigurationResult& ListBucketInventoryConfigurationResult::
 
             node = root->FirstChildElement("InventoryConfiguration");
 
-            for (; node; node = node->NextSiblingElement()) {
+            for (; node; node = node->NextSiblingElement("InventoryConfiguration")) {
                 XMLElement* conf_node;
 
-                InventoryConfiguration inventoryConfiguration_;
+                InventoryConfiguration inventoryConfiguration;
 
                 conf_node = node->FirstChildElement("Id");
-                if (conf_node && conf_node->GetText()) inventoryConfiguration_.setId(conf_node->GetText());
+                if (conf_node && conf_node->GetText()) inventoryConfiguration.setId(conf_node->GetText());
 
                 conf_node = node->FirstChildElement("IsEnabled");
-                if (conf_node && conf_node->GetText()) inventoryConfiguration_.setIsEnabled((std::strncmp(conf_node->GetText(), "true", 4) ? false : true));
+                if (conf_node && conf_node->GetText()) inventoryConfiguration.setIsEnabled((std::strncmp(conf_node->GetText(), "true", 4) ? false : true));
 
                 conf_node = node->FirstChildElement("Filter");
                 if (conf_node) {
-                    Filter filter;
+                    InventoryFilter filter;
                     XMLElement* prefix_node = conf_node->FirstChildElement("Prefix");
                     if (prefix_node && prefix_node->GetText()) filter.setPrefix(prefix_node->GetText());
-                    inventoryConfiguration_.setFilter(filter);
+                    inventoryConfiguration.setFilter(filter);
                 }
                 conf_node = node->FirstChildElement("Destination");
                 if (conf_node) {
@@ -75,50 +75,61 @@ ListBucketInventoryConfigurationResult& ListBucketInventoryConfigurationResult::
                     next_node = conf_node->FirstChildElement("OSSBucketDestination");
                     if (next_node) {
                         XMLElement* sub_node;
-                        OSSBucketDestination dest;
+                        InventoryOSSBucketDestination dest;
                         sub_node = next_node->FirstChildElement("Format");
-                        if (sub_node && sub_node->GetText()) dest.setFormat(sub_node->GetText());
+                        if (sub_node && sub_node->GetText()) dest.setFormat(ToInventoryFormatType(sub_node->GetText()));
                         sub_node = next_node->FirstChildElement("AccountId");
                         if (sub_node && sub_node->GetText()) dest.setAccountId(sub_node->GetText());
                         sub_node = next_node->FirstChildElement("RoleArn");
                         if (sub_node && sub_node->GetText()) dest.setRoleArn(sub_node->GetText());
                         sub_node = next_node->FirstChildElement("Bucket");
-                        if (sub_node && sub_node->GetText()) dest.setBucket(sub_node->GetText());
+                        if (sub_node && sub_node->GetText()) dest.setBucket(ToInventoryBucketShortName(sub_node->GetText()));
                         sub_node = next_node->FirstChildElement("Prefix");
                         if (sub_node && sub_node->GetText()) dest.setPrefix(sub_node->GetText());
                         sub_node = next_node->FirstChildElement("Encryption");
                         if (sub_node) {
-                            sub_node = sub_node->FirstChildElement("SSE-KMS");
-                            if (sub_node) {
-                                sub_node = sub_node->FirstChildElement("KeyId");
-                                if (sub_node && sub_node->GetText()) dest.setEncryption(sub_node->GetText());
+                            InventoryEncryption encryption;
+                            XMLElement* sse_node;
+                            sse_node = sub_node->FirstChildElement("SSE-KMS");
+                            if (sse_node) {
+                                InventorySSEKMS ssekms;
+                                XMLElement* key_node;
+                                key_node = sse_node->FirstChildElement("KeyId");
+                                if (key_node && key_node->GetText()) ssekms.setKeyId(key_node->GetText());
+                                encryption.setSSEKMS(ssekms);
                             }
+
+                            sse_node = sub_node->FirstChildElement("SSE-OSS");
+                            if (sse_node) {
+                                encryption.setSSEOSS(InventorySSEOSS());
+                            }
+                            dest.setEncryption(encryption);
                         }
-                        inventoryConfiguration_.setDestination(dest);
+                        inventoryConfiguration.setDestination(InventoryDestination(dest));
                     }
                 }
 
                 conf_node = node->FirstChildElement("Schedule");
                 if (conf_node) {
                     XMLElement* freq_node = conf_node->FirstChildElement("Frequency");
-                    if (freq_node && freq_node->GetText()) inventoryConfiguration_.setSchedule(ToInventoryFrequency(freq_node->GetText()));
+                    if (freq_node && freq_node->GetText()) inventoryConfiguration.setSchedule(ToInventoryFrequencyType(freq_node->GetText()));
                 }
 
                 conf_node = node->FirstChildElement("IncludedObjectVersions");
-                if (conf_node && conf_node->GetText()) inventoryConfiguration_.setIncludedObjectVersions(ToInventoryIncludedObjectVersions(conf_node->GetText()));
+                if (conf_node && conf_node->GetText()) inventoryConfiguration.setIncludedObjectVersions(ToInventoryIncludedObjectVersionsType(conf_node->GetText()));
 
                 conf_node = node->FirstChildElement("OptionalFields");
                 if (conf_node) {
-                    OptionalFields field;
+                    InventoryOptionalFields field;
                     XMLElement* field_node = conf_node->FirstChildElement("Field");
                     for (; field_node; field_node = field_node->NextSiblingElement()) {
                         if (field_node->GetText())
-                            field.push_back(ToInventoryOptionalFields(field_node->GetText()));
+                            field.push_back(ToInventoryOptionalFieldType(field_node->GetText()));
                     }
-                    inventoryConfiguration_.setOptionalFields(field);
+                    inventoryConfiguration.setOptionalFields(field);
                 }
 
-                inventoryConfigurationList_.push_back(inventoryConfiguration_);
+                inventoryConfigurationList_.push_back(inventoryConfiguration);
             }
 
             node = root->FirstChildElement("IsTruncated");

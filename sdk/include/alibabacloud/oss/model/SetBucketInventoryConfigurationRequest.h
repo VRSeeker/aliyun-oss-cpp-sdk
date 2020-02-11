@@ -27,6 +27,7 @@ namespace OSS
     {
     public:
         SetBucketInventoryConfigurationRequest(const std::string& bucket);
+        SetBucketInventoryConfigurationRequest(const std::string& bucket, const InventoryConfiguration& conf);
         void setInventoryConfiguration(InventoryConfiguration conf);
     protected:
         virtual ParameterCollection specialParameters() const;

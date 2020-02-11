@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-#pragma once
-#include <alibabacloud/oss/Export.h>
-#include <alibabacloud/oss/OssRequest.h>
+#include <alibabacloud/oss/model/ListBucketInventoryConfigurationsRequest.h>
 
-namespace AlibabaCloud
+using namespace AlibabaCloud::OSS;
+
+ListBucketInventoryConfigurationsRequest::ListBucketInventoryConfigurationsRequest(const std::string& bucket) :
+    OssBucketRequest(bucket)
 {
-namespace OSS
-{
-    class ALIBABACLOUD_OSS_EXPORT ListBucketInventoryConfigurationRequest : public OssBucketRequest
-    {
-    public:
-        ListBucketInventoryConfigurationRequest(const std::string& bucket);
-        void setContinuationToken(const std::string& token) { continuationToken_ = token; }
-    protected:
-        virtual ParameterCollection specialParameters() const;
-    private:
-        std::string continuationToken_;
-    };
-}
 }
 
+ParameterCollection ListBucketInventoryConfigurationsRequest::specialParameters() const
+{
+    ParameterCollection parameters;
+    parameters["inventory"] = "";
+    if (!continuationToken_.empty()) {
+        parameters["continuation-token"] = continuationToken_;
+    }
+    return parameters;
+}

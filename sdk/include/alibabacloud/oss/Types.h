@@ -127,6 +127,12 @@ namespace OSS
         Bulk
     };
 
+    enum class InventoryFormat
+    {
+        NotSet,
+        CSV
+    };
+
     enum class InventoryFrequency
     {
         NotSet,
@@ -134,8 +140,9 @@ namespace OSS
         Weekly
     };
 
-    enum class InventoryOptionalFields
+    enum class InventoryOptionalField
     {
+        NotSet,
         Size,
         LastModifiedDate,
         ETag,
@@ -146,7 +153,9 @@ namespace OSS
 
     enum class InventoryIncludedObjectVersions
     { 
-        All
+        NotSet,
+        All,
+        Current
     };
 
     typedef void(*LogCallback)(LogLevel level, const std::string& stream);
